@@ -27,13 +27,11 @@ function formatDateTime(dateTime) {
   return `${datePart} · ${timePart}`;
 }
 
-// venue can be a plain string, or an object like { name, campus }
-// depending on how the backend DTO ends up shaping it.
 function formatVenue(venue) {
   if (!venue) return "Venue TBA";
   if (typeof venue === "string") return venue;
-  if (venue.name && venue.campus) return `${venue.name}, ${venue.campus}`;
-  return venue.name || venue.campus || "Venue TBA";
+  if (venue.venueName && venue.campus) return `${venue.venueName}, ${venue.campus}`;
+  return venue.venueName || venue.campus || "Venue TBA";
 }
 
 export default function EventCard({ event, onBook }) {

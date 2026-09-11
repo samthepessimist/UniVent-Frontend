@@ -21,8 +21,8 @@ const ROLE_CONFIG = {
     links: [{ label: "My Bookings", href: "/student/bookings" }],
   },
   ORGANIZER: {
-    homeHref: "/organizer/events",
-    profileHref: "/organizer/events",
+    homeHref: "/organizer",
+    profileHref: "/organizer",
     links: [{ label: "Create Event", href: "/organizer/events/create" }],
   },
   ADMIN: {
@@ -91,14 +91,16 @@ export default function Navbar() {
         <div className="flex items-center gap-2">
           <div className="hidden md:block">
             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 rounded-full py-1 pl-1 pr-2 transition-colors hover:bg-slate-100">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
-                  </Avatar>
-                  <ChevronDown className="h-4 w-4 text-slate-500" />
-                </button>
-              </DropdownMenuTrigger>
+              <DropdownMenuTrigger
+                render={
+                  <button className="flex items-center gap-2 rounded-full py-1 pl-1 pr-2 transition-colors hover:bg-slate-100">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
+                    </Avatar>
+                    <ChevronDown className="h-4 w-4 text-slate-500" />
+                  </button>
+                }
+              />
               <DropdownMenuContent align="end" className="w-48">
                 <DropdownMenuLabel className="font-normal">
                   <p className="text-sm font-medium text-slate-900">{user?.name}</p>

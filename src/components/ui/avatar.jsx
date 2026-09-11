@@ -1,166 +1,115 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Menu, X, LogOut, User as UserIcon, ChevronDown } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { useAuth } from "@/hooks/useAuth";
+"use client"
 
-// Role -> home route + role-specific nav links.
-// Matches the routes documented in the project README.
-const ROLE_CONFIG = {
-  STUDENT: {
-    homeHref: "/student",
-    profileHref: "/student/profile",
-    links: [{ label: "My Bookings", href: "/student/bookings" }],
-  },
-  ORGANIZER: {
-    homeHref: "/organizer/events",
-    profileHref: "/organizer/events",
-    links: [{ label: "Create Event", href: "/organizer/events/create" }],
-  },
-  ADMIN: {
-    homeHref: "/admin",
-    profileHref: "/admin",
-    links: [
-      { label: "All Events", href: "/admin/events" },
-      { label: "Manage Users", href: "/admin/users" },
-    ],
-  },
-};
+import * as React from "react"
+import { Avatar as AvatarPrimitive } from "@base-ui/react/avatar"
+import { cn } from "cn"
 
-function getInitials(name = "") {
-  return name
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("");
+function Avatar({
+  className,
+  size = "default",
+  ...props
+}) {
+  return (
+    <AvatarPrimitive.Root
+      data-slot="avatar"
+      data-size={size}
+      className={cn(
+        "group/avatar relative flex size-8 shrink-0 rounded-full select-none after:absolute after:inset-0 after:rounded-full after:border after:border-border after:mix-blend-darken data-[size=lg]:size-10 data-[size=sm]:size-6 dark:after:mix-blend-lighten",
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
-export default function Navbar() {
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const navigate = useNavigate();
-  const { user, logout } = useAuth();
-
-  const config = ROLE_CONFIG[user?.role] ?? { homeHref: "/", profileHref: "/", links: [] };
-
-  const handleNavigate = (href) => {
-    setMobileOpen(false);
-    navigate(href);
-  };
-
-  const handleLogout = () => {
-    setMobileOpen(false);
-    logout();
-    navigate("/login");
-  };
-
+function AvatarImage({
+  className,
+  ...props
+}) {
   return (
-    <nav className="sticky top-0 z-40 w-full border-b border-slate-200 bg-white">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <button
-          onClick={() => handleNavigate(config.homeHref)}
-          aria-label="Go to home"
-          className="flex items-center gap-2 text-lg font-semibold tracking-tight text-slate-900"
-        >
-          <span className="flex h-8 w-8 items-center justify-center rounded-md bg-indigo-600 text-sm font-bold text-white">
-            U
-          </span>
-          UniVent
-        </button>
-
-        <div className="hidden items-center gap-1 md:flex">
-          {config.links.map((link) => (
-            <button
-              key={link.href}
-              onClick={() => handleNavigate(link.href)}
-              className="rounded-md px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900"
-            >
-              {link.label}
-            </button>
-          ))}
-        </div>
-
-        <div className="flex items-center gap-2">
-          <div className="hidden md:block">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <button className="flex items-center gap-2 rounded-full py-1 pl-1 pr-2 transition-colors hover:bg-slate-100">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
-                  </Avatar>
-                  <ChevronDown className="h-4 w-4 text-slate-500" />
-                </button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="w-48">
-                <DropdownMenuLabel className="font-normal">
-                  <p className="text-sm font-medium text-slate-900">{user?.name}</p>
-                </DropdownMenuLabel>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => handleNavigate(config.profileHref)}>
-                  <UserIcon className="mr-2 h-4 w-4" />
-                  Profile
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={handleLogout}>
-                  <LogOut className="mr-2 h-4 w-4" />
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-
-          <button
-            onClick={() => setMobileOpen((open) => !open)}
-            className="rounded-md p-2 text-slate-600 hover:bg-slate-100 md:hidden"
-            aria-label={mobileOpen ? "Close menu" : "Open menu"}
-            aria-expanded={mobileOpen}
-          >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-      </div>
-
-      {mobileOpen && (
-        <div className="border-t border-slate-200 bg-white px-4 pb-4 pt-2 md:hidden">
-          <div className="flex items-center gap-3 border-b border-slate-100 py-3">
-            <Avatar className="h-9 w-9">
-              <AvatarFallback>{getInitials(user?.name)}</AvatarFallback>
-            </Avatar>
-            <p className="text-sm font-medium text-slate-900">{user?.name}</p>
-          </div>
-
-          <div className="flex flex-col py-2">
-            {config.links.map((link) => (
-              <button
-                key={link.href}
-                onClick={() => handleNavigate(link.href)}
-                className="rounded-md px-3 py-2 text-left text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-              >
-                {link.label}
-              </button>
-            ))}
-            <button
-              onClick={() => handleNavigate(config.profileHref)}
-              className="rounded-md px-3 py-2 text-left text-sm font-medium text-slate-600 hover:bg-slate-100 hover:text-slate-900"
-            >
-              Profile
-            </button>
-            <button
-              onClick={handleLogout}
-              className="rounded-md px-3 py-2 text-left text-sm font-medium text-red-600 hover:bg-red-50"
-            >
-              Logout
-            </button>
-          </div>
-        </div>
+    <AvatarPrimitive.Image
+      data-slot="avatar-image"
+      className={cn(
+        "aspect-square size-full rounded-full object-cover",
+        className
       )}
-    </nav>
-  );
+      {...props}
+    />
+  )
+}
+
+function AvatarFallback({
+  className,
+  ...props
+}) {
+  return (
+    <AvatarPrimitive.Fallback
+      data-slot="avatar-fallback"
+      className={cn(
+        "flex size-full items-center justify-center rounded-full bg-muted text-sm text-muted-foreground group-data-[size=sm]/avatar:text-xs",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function AvatarBadge({
+  className,
+  ...props
+}) {
+  return (
+    <span
+      data-slot="avatar-badge"
+      className={cn(
+        "absolute right-0 bottom-0 z-10 inline-flex items-center justify-center rounded-full bg-primary text-primary-foreground bg-blend-color ring-2 ring-background select-none",
+        "group-data-[size=sm]/avatar:size-2 group-data-[size=sm]/avatar:[&>svg]:hidden",
+        "group-data-[size=default]/avatar:size-2.5 group-data-[size=default]/avatar:[&>svg]:size-2",
+        "group-data-[size=lg]/avatar:size-3 group-data-[size=lg]/avatar:[&>svg]:size-2",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function AvatarGroup({
+  className,
+  ...props
+}) {
+  return (
+    <div
+      data-slot="avatar-group"
+      className={cn(
+        "group/avatar-group flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:ring-background",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+function AvatarGroupCount({
+  className,
+  ...props
+}) {
+  return (
+    <div
+      data-slot="avatar-group-count"
+      className={cn(
+        "relative flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-sm text-muted-foreground ring-2 ring-background group-has-data-[size=lg]/avatar-group:size-10 group-has-data-[size=sm]/avatar-group:size-6 [&>svg]:size-4 group-has-data-[size=lg]/avatar-group:[&>svg]:size-5 group-has-data-[size=sm]/avatar-group:[&>svg]:size-3",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+  AvatarGroup,
+  AvatarGroupCount,
+  AvatarBadge,
 }
