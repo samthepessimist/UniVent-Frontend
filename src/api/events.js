@@ -34,3 +34,8 @@ export const disableEvent = async (id) => {
   const response = await client.patch(`/api/events/${id}/disable`);
   return response.data;
 };
+
+export const getOrganizerEvents = async () => {
+  const response = await client.get("/api/events?organizerId=me");
+  return response.data;
+};
